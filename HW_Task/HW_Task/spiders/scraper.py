@@ -30,9 +30,9 @@ class Olx_Scrap(scrapy.Spider):
 class Olx_Items(CrawlSpider):
     name = "items"
     allowed_domains = ['www.olx.in']
-    start_urls = ['https://www.olx.in/kozhikode_g4058877/for-rent-houses-apartments_c1723?page=']
+    start_urls = ['https://www.olx.in/kozhikode_g4058877/for-rent-houses-apartments_c1723']
     rules = (
-        Rule(LinkExtractor(allow='kozhikode_g4058877/for-rent-houses-apartments_c1723',deny='item')),
+        Rule(LinkExtractor(allow='for-rent-houses-apartments_c1723',deny='item')),
         Rule(LinkExtractor(allow='item'),callback='parse_item')
     )
     def parse_item(self,response):
