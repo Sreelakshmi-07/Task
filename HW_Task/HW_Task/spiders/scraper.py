@@ -32,24 +32,31 @@ class Olx_Items(CrawlSpider):
     allowed_domains = ['www.olx.in']
     start_urls = ['https://www.olx.in/kozhikode_g4058877/for-rent-houses-apartments_c1723']
     rules = (
-        Rule(LinkExtractor(allow='for-rent-houses-apartments_c1723',deny='item')),
-        Rule(LinkExtractor(allow='item'),callback='parse_item')
+        Rule(LinkExtractor(allow='for-rent-houses-apartments_c1723', deny='item')),
+        Rule(LinkExtractor(allow='item'), callback='parse_item')
     )
-    def parse_item(self,response):
+
+    def parse_item(self, response):
+        # key = ['amount', 'currency']
+        # value = []
+        # for values in response.xpath("//section[@class='_2wMiF']/span[@class='_2xKfz']/text()"):
+        #     key.append(values.xpath("//span[@class='_2xKfz'][position ()=1 or position () ==]").getall())
+        #     value.append(values.xpath("//span[@class='_2xKfz'][position ()=2 or position () ==4").getall())
         yield {
-            'product':response.xpath("//div[@class='rui-2CYS9']/section[@class='_2wMiF']/h1[@class='_3rJ6e']/text()").get()
+            'property_name': response.xpath(
+                "//div[@class='rui-2CYS9']/section[@class='_2wMiF']/h1[@class='_3rJ6e']/text()").get(),
+            'property_id': response.xpath(
+                "//div[@class='fr4Cy']/strong/text()").re(r"\d"),
+            'breadcrumbs': response.xpath("//ol[@class='rui-10Yqz']/li/a/text()").getall(),
+            'price': response.xpath("//section[@class='_2wMiF']/span[@class='_2xKfz']/text()").getall(),
+            'img': response.xpath("//figure/img[@class='_39P4_']/@src").get(),
+            # 'description'
+            'seller_name': response.xpath("//div[@class='_3oOe9']/text()").get(),
+            'location': response.xpath("//div[@class='_2A3Wa']/span[@class='_2FRXm']/text()").get(),
+            'property_type': response.xpath(
+                "//div[@class='_3_knn'][1]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get(),
+            'bathroom': response.xpath(
+                "//div[@class='_3_knn'][3]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get(),
+            'bedrooms': response.xpath(
+                "//div[@class='_3JPEe']/div[@class='_3_knn'][2]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get()
         }
-
-
-
-
-
-# def parse_item(self,response):
-#     for houses in response.xpath("//ul[@class='rl3f9 _3mXOU']/li[@class='EIR5N']/a[@class='fhlkh']/@href"):
-#         yield {
-#             'property_name': houses.xpath('//section/h1/text()').extract(),
-#             'property_id': houses.xpath('//div/strong/text()').extract(),
-#             # 'breadcrumbs': houses.xpath('')
-#         }
-
-# //*[@id="container"]/main/div/div/section/div/div/div[5]/div[2]/div/div[2]/ul/li[1]/a
