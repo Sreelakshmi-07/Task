@@ -37,11 +37,6 @@ class Olx_Items(CrawlSpider):
     )
 
     def parse_item(self, response):
-        # key = ['amount', 'currency']
-        # value = []
-        # for values in response.xpath("//section[@class='_2wMiF']/span[@class='_2xKfz']/text()"):
-        #     key.append(values.xpath("//span[@class='_2xKfz'][position ()=1 or position () ==]").getall())
-        #     value.append(values.xpath("//span[@class='_2xKfz'][position ()=2 or position () ==4").getall())
         yield {
             'property_name': response.xpath(
                 "//div[@class='rui-2CYS9']/section[@class='_2wMiF']/h1[@class='_3rJ6e']/text()").get(),
@@ -50,13 +45,19 @@ class Olx_Items(CrawlSpider):
             'breadcrumbs': response.xpath("//ol[@class='rui-10Yqz']/li/a/text()").getall(),
             'price': response.xpath("//section[@class='_2wMiF']/span[@class='_2xKfz']/text()").getall(),
             'img': response.xpath("//figure/img[@class='_39P4_']/@src").get(),
-            # 'description'
+            'description': [
+                response.xpath(
+                    '//*[@id="container"]/main/div/div/div/div[4]/section[1]/div/div/h3[2]/span/text()').get(),
+                response.xpath(
+                    '//*[@id="container"]/main/div/div/div/div[4]/section[1]/div/div/div[2]/p/text()'
+                ).getall()
+            ],
             'seller_name': response.xpath("//div[@class='_3oOe9']/text()").get(),
             'location': response.xpath("//div[@class='_2A3Wa']/span[@class='_2FRXm']/text()").get(),
             'property_type': response.xpath(
                 "//div[@class='_3_knn'][1]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get(),
-            'bathroom': response.xpath(
-                "//div[@class='_3_knn'][3]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get(),
-            'bedrooms': response.xpath(
-                "//div[@class='_3JPEe']/div[@class='_3_knn'][2]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get()
+            'bathroom': int(response.xpath(
+                "//div[@class='_3_knn'][3]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get()),
+            'bedrooms': int(response.xpath(
+                "//div[@class='_3JPEe']/div[@class='_3_knn'][2]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get())
         }
