@@ -38,35 +38,31 @@ class Olx_Items(CrawlSpider):
 
     def parse_item(self, response):
         for olx_house in response.xpath("//div[@id='container']/main[@class='_1_dLE _20mSp']"):
-            houses = HwTaskItem()
-            houses['property_name'] = olx_house.xpath(
+            house = HwTaskItem()
+            house['property_name'] = olx_house.xpath(
                 "//div[@class='rui-2CYS9']/section[@class='_2wMiF']/h1[@class='_3rJ6e']/text()").get()
-            houses['property_id'] = ' '.join(
+            house['property_id'] = ' '.join(
                 map(str, olx_house.xpath("//div[@class='fr4Cy']/strong/text()").re(r"\d+"))
-            )
+            ),
+            house['breadcrumbs'] = olx_house.xpath("//ol[@class='rui-10Yqz']/li/a/text()").getall()
+            # house['price']:
+            house['img'] = olx_house.xpath("//figure/img[@class='_39P4_']/@src").get(),
+            house['description'] = [
+                                       olx_house.xpath(
+                                           '//*[@id="container"]/main/div/div/div/div[4]/section[1]/div/div/h3[2]/span/text()'
+                                       ).get(),
+                                       olx_house.xpath(
+                                           '//*[@id="container"]/main/div/div/div/div[4]/section[1]/div/div/div[2]/p/text()'
+                                       ).getall()
+                                   ],
+            house['seller_name'] = olx_house.xpath("//div[@class='_3oOe9']/text()").get(),
+            house['location'] = olx_house.xpath("//div[@class='_2A3Wa']/span[@class='_2FRXm']/text()").get(),
+            house['property_type'] = olx_house.xpath(
+                "//div[@class='_3_knn'][1]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get(),
+            house['bathroom'] = int(olx_house.xpath(
+                "//div[@class='_3_knn'][3]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get())
+            house['bedrooms'] = int(olx_house.xpath(
+                "//div[@class='_3JPEe']/div[@class='_3_knn'][2]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()"
+            ).get())
 
-            yield houses
-    # yield {
-    #     'property_name': olx_house.xpath(
-    #         "//div[@class='rui-2CYS9']/section[@class='_2wMiF']/h1[@class='_3rJ6e']/text()").get(),
-    # 'property_id': response.xpath(
-    #     "//div[@class='fr4Cy']/strong/text()").re(r"\d"),
-    # 'breadcrumbs': response.xpath("//ol[@class='rui-10Yqz']/li/a/text()").getall(),
-    # 'price': response.xpath("//section[@class='_2wMiF']/span[@class='_2xKfz']/text()").getall(),
-    # 'img': response.xpath("//figure/img[@class='_39P4_']/@src").get(),
-    # 'description': [
-    #     response.xpath(
-    #         '//*[@id="container"]/main/div/div/div/div[4]/section[1]/div/div/h3[2]/span/text()').get(),
-    #     response.xpath(
-    #         '//*[@id="container"]/main/div/div/div/div[4]/section[1]/div/div/div[2]/p/text()'
-    #     ).getall()
-    # ],
-    # 'seller_name': response.xpath("//div[@class='_3oOe9']/text()").get(),
-    # 'location': response.xpath("//div[@class='_2A3Wa']/span[@class='_2FRXm']/text()").get(),
-    # 'property_type': response.xpath(
-    #     "//div[@class='_3_knn'][1]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get(),
-    # 'bathroom': int(response.xpath(
-    #     "//div[@class='_3_knn'][3]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get()),
-    # 'bedrooms': int(response.xpath(
-    #     "//div[@class='_3JPEe']/div[@class='_3_knn'][2]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get())
-    # }
+        yield house
