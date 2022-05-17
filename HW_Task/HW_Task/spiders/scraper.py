@@ -2,6 +2,7 @@ import scrapy
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from ..items import HwTaskItem
+import json
 
 
 class Olx_Scrap(scrapy.Spider):
@@ -27,16 +28,16 @@ class Olx_Scrap(scrapy.Spider):
             }
 
 
-class Olx_Items(CrawlSpider):
+class Olx_Details(CrawlSpider):
     name = "items"
     allowed_domains = ['www.olx.in']
     start_urls = ['https://www.olx.in/kozhikode_g4058877/for-rent-houses-apartments_c1723']
     rules = (
         Rule(LinkExtractor(allow='for-rent-houses-apartments_c1723', deny='item')),
-        Rule(LinkExtractor(allow='item'), callback='parse_item')
+        Rule(LinkExtractor(allow='item'), callback='parse')
     )
 
-    def parse_item(self, response):
+    def parse(self, response):
         for olx_house in response.xpath("//div[@id='container']/main[@class='_1_dLE _20mSp']"):
             house = HwTaskItem()
             house['property_name'] = olx_house.xpath(
@@ -64,5 +65,5 @@ class Olx_Items(CrawlSpider):
             house['bedrooms'] = int(olx_house.xpath(
                 "//div[@class='_3JPEe']/div[@class='_3_knn'][2]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()"
             ).get())
-
         yield house
+        print(json.dump(house, indent=4))
