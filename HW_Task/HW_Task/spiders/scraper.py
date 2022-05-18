@@ -29,18 +29,16 @@ class OlxScrap(scrapy.Spider):
 class OlxDetails(CrawlSpider):
     name = "items"
     allowed_domains = ['www.olx.in']
-    start_urls = ['https://www.olx.in/kozhikode_g4058877/for-rent-houses-apartments_c1723']
+    start_urls = ['https://www.olx.in/kozhikode_g4058877/for-rent-houses-apartments_c1723?sorting=desc-relevance',]
     rules = (
-        Rule(LinkExtractor(allow='for-rent-houses-apartments_c1723', deny='item')),
-        Rule(LinkExtractor(allow='item'), callback='parse')
+        Rule(LinkExtractor(allow='kozhikode_g4058877/for-rent-houses-apartments_c1723', deny="item")),
+        Rule(LinkExtractor(allow="item"), callback='parse')
     )
 
     def parse(self, response):
         list1 = ' '.join(map(str, response.xpath("//section[@class='_2wMiF']/span[@class='_2xKfz']/text()").getall()))
-        convert_list = list1.split(",")
-        price_dict = {}
-        price_dict["amount"] = convert_list[1]
-        price_dict["currency"] = convert_list[0]
+        convert_list = list1.split(" ")
+        price_dict = {"amount": convert_list[1], "currency": convert_list[0]}
 
         yield {
             'property_name': response.xpath(
@@ -49,7 +47,7 @@ class OlxDetails(CrawlSpider):
                 map(str, response.xpath("//div[@class='fr4Cy']/strong/text()").re(r"\d+")
                     )),
             'breadcrumbs': response.xpath("//ol[@class='rui-10Yqz']/li/a/text()").getall(),
-            'price': print(price_dict),
+            'price': price_dict,
             'img': response.xpath("//figure/img[@class='_39P4_']/@src").get(),
             'description': ' '.join(map(str, (
                 response.xpath(
@@ -67,7 +65,3 @@ class OlxDetails(CrawlSpider):
                 "//div[@class='_3JPEe']/div[@class='_3_knn'][2]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()"
             ).get())
         }
-        # x = list.split(",")
-        #  mydict={}
-        # >>> mydict["Amount"]=x[0]
-        # >>> print(mydict)
