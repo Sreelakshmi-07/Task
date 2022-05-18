@@ -36,6 +36,12 @@ class OlxDetails(CrawlSpider):
     )
 
     def parse(self, response):
+        list1 = ' '.join(map(str, response.xpath("//section[@class='_2wMiF']/span[@class='_2xKfz']/text()").getall()))
+        convert_list = list1.split(",")
+        price_dict = {}
+        price_dict["amount"] = convert_list[1]
+        price_dict["currency"] = convert_list[0]
+
         yield {
             'property_name': response.xpath(
                 "//div[@class='rui-2CYS9']/section[@class='_2wMiF']/h1[@class='_3rJ6e']/text()").get(),
@@ -43,16 +49,16 @@ class OlxDetails(CrawlSpider):
                 map(str, response.xpath("//div[@class='fr4Cy']/strong/text()").re(r"\d+")
                     )),
             'breadcrumbs': response.xpath("//ol[@class='rui-10Yqz']/li/a/text()").getall(),
-            'price': response.xpath("//section[@class='_2wMiF']/span[@class='_2xKfz']/text()").getall(),
+            'price': print(price_dict),
             'img': response.xpath("//figure/img[@class='_39P4_']/@src").get(),
-            'description': [
+            'description': ' '.join(map(str, (
                 response.xpath(
                     '//*[@id="container"]/main/div/div/div/div[4]/section[1]/div/div/h3[2]/span/text()').get(),
                 response.xpath(
-                    '//*[@id="container"]/main/div/div/div/div[4]/section[1]/div/div/div[2]/p/text()').getall()
-            ],
+                    '//*[@id="container"]/main/div/div/div/div[4]/section[1]/div/div/div[2]/p/text()').get()))),
             'seller_name': response.xpath("//div[@class='_3oOe9']/text()").get(),
-            'location': response.xpath("//div[@class='_2A3Wa']/span[@class='_2FRXm']/text()").get(),
+            'location': response.xpath(
+                "//div[@class='_2A3Wa']/span[@class='_2FRXm']/text()").get(),
             'property_type': response.xpath(
                 "//div[@class='_3_knn'][1]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()").get(),
             'bathroom': int(response.xpath(
@@ -61,3 +67,7 @@ class OlxDetails(CrawlSpider):
                 "//div[@class='_3JPEe']/div[@class='_3_knn'][2]/div[@class='_2ECXs']/span[@class='_2vNpt']/text()"
             ).get())
         }
+        # x = list.split(",")
+        #  mydict={}
+        # >>> mydict["Amount"]=x[0]
+        # >>> print(mydict)
